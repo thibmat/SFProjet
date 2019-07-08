@@ -1,6 +1,6 @@
 index:
     path: /
     controller: App\Controller\IndexController::index
-login:
-    path: /login
-    controller: App\Controller\LoginController::login
+app_logout:
+    path: /logout
+    methods: GET

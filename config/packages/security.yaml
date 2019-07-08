@@ -19,6 +19,13 @@ security:
             guard:
                 authenticators:
                     - App\Security\AuthAuthenticator
+            logout:
+                path:   app_logout
+            remember_me:
+                secret:   '%kernel.secret%'
+                lifetime: 86400 # 1 jour in seconds
+                path:     /
+
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication

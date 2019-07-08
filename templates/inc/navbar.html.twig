@@ -61,11 +61,14 @@
                 </a>
             </li>
             <li class="nav-item">
-
+                {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                    <a class="text-white" href="{{ path('app_logout') }}">Deconnexion</a>
+                {% else %}
                     <a href="#loginModal" class="nav-link" data-toggle="modal">
                         <img src="{{ asset('img/divers/user-circle-regular.svg') }}" style="width:20px;height:20px;">
                     </a>
                     {% include 'security/loginmodal.html.twig' %}
+                {% endif %}
 
             </li>
         </ul>
