@@ -1,38 +1,39 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Annonces{% endblock %}
+{% block title %}Détail de l'annonce{% endblock %}
 
 {% block body %}
-    <h1>Annonces</h1>
+    <h1>Detail de l'annonce</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ annonce.id }}</td>
-            </tr>
-            <tr>
-                <th>AnnonceTitre</th>
-                <td>{{ annonce.annonceTitre }}</td>
-            </tr>
-            <tr>
-                <th>AnnonceTexte</th>
-                <td>{{ annonce.annonceTexte }}</td>
-            </tr>
-            <tr>
-                <th>IsPublished</th>
-                <td>{{ annonce.isPublished ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>AnnoncePrix</th>
-                <td>{{ annonce.annoncePrix }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="card p-3">
+        <div class="card-header w-100  mb-4"><h4 class="text-right"><span class="badge badge-success">{{ annonce.category }}</span></h4class><h3 class="text-left">{{ annonce.annonceTitre }} </h3></div>
+        <div class="row">
+            <div class="col-md-12 mr-0 d-flex justify-content-end">
+                <div class="card-block">
+                    <h3><span class="badge badge-info">{{ annonce.annoncePrix }} €</span></h3>
+                </div>
+            </div>
 
-    <a href="{{ path('annonces_index') }}">Retour à la liste</a>
+            <div class="col-md-5 ">
+                <img src="{{ vich_uploader_asset(annonce.image, 'imageFile') }}" alt="image de {{ annonce.annonceTitre }}" class="w-100">
+            </div>
 
-    <a href="{{ path('annonces_edit', {'id': annonce.id}) }}">Editer</a>
+            <div class="col-md-7 px-3">
+                <div class="card-block px-3">
+                    <h4 class="card-title d-block">{{ annonce.annonceTitre }} </h4>
+                    <p class="card-text text-black">{{ annonce.annonceTexte}}</p>
+                </div>
+            </div>
 
-    {{ include('annonces/_delete_form.html.twig') }}
+        </div>
+
+    </div>
+
+    <div class="col-sm-6">
+        <p>
+            Annonce publiée le {{ annonce.createdAt| date('d/m/Y') }}, vue {{ annonce.nbViews }} fois
+        </p>
+        <a href="{{ path('annonces_index') }}"><button type="submit" class="btn-primary btn">Retour à la liste</button></a>
+        {{ include('annonces/_delete_form.html.twig') }}
+    </div>
 {% endblock %}

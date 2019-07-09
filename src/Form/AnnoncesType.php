@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Annonces;
+use App\Form\ImageType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -26,9 +27,7 @@ class AnnoncesType extends AbstractType
                 ])
             ->add(
                 'imageFile',
-                FileType::class,
-                [
-                    'label' => 'Image (jpg / png / jpeg)',
+                ImageType::class,[
                     'mapped'=>false
                 ]
             )

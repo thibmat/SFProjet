@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -11,7 +12,6 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\AnnoncesRepository")
  * @ORM\HasLifecycleCallbacks()
- *
  */
 class Annonces
 {
@@ -68,6 +68,8 @@ class Annonces
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Image", inversedBy="annonces")
+     * @Assert\Type(type="App\Entity\Image")
+     * @Assert\Valid
      */
     private $image;
 
@@ -77,9 +79,29 @@ class Annonces
      */
     private $author;
 
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $nbViews;
+
     public function __construct()
     {
         $this->userId = new ArrayCollection();
+    }
+
+    /**
+     * Initialise les valeurs par défault lors de la création de l'annonce
+     * @ORM\PrePersist
+     */
+    public function setDefaultValues()
+    {
+        $this->createdAt = new DateTime();
+        $this->setNbViews(0);
     }
 
     public function getId(): ?int
@@ -193,6 +215,30 @@ class Annonces
     public function setAuthor(?User $author): self
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getNbViews(): ?int
+    {
+        return $this->nbViews;
+    }
+
+    public function setNbViews(?int $nbViews): self
+    {
+        $this->nbViews = $nbViews;
 
         return $this;
     }

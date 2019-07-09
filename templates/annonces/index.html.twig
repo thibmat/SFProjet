@@ -4,32 +4,38 @@
 
 {% block body %}
     <h1>Liste des annonces</h1>
-
-    <table class="table">
-        <thead>
-            <tr>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="mr-0 my-4 text-right">
+        {% if is_granted('ROLE_MODERATEUR') %}
+            <a href="{{ path('annonces_new') }}" class="mr-0 d-block"><button class="btn-success btn">Rédiger une nouvelle annonce</button></a>
+        {% endif %}
+    </div>
         {% for annonce in annonces %}
-            <tr>
-                <td>{{ annonce.id }}</td>
-                <td>{{ annonce.annonceTitre }}</td>
-                <td>{{ annonce.annonceTexte }}</td>
-                <td>{{ annonce.isPublished ? 'Yes' : 'No' }}</td>
-                <td>{{ annonce.annoncePrix }}</td>
-                <td>
-                    <a href="{{ path('annonces_show', {'id': annonce.id}) }}">show</a>
-                    <a href="{{ path('annonces_edit', {'id': annonce.id}) }}">edit</a>
-                </td>
-            </tr>
+        <a href="{{ path('annonces_show', {'id': annonce.id}) }}" class="text-decoration-none" style="color:black">
+            <div class="card p-3">
+                <div class="row ">
+                    <div class="col-md-1 ">
+                        <img src="{{ vich_uploader_asset(annonce.image, 'imageFile') }}" alt="image de {{ annonce.annonceTitre }}" class="w-100">
+                    </div>
+                    <div class="col-md-9 px-3">
+                        <div class="card-block px-3">
+                            <h4 class="card-title d-block">{{ annonce.annonceTitre }} <span class="badge badge-success d-inline-block">{{ annonce.category }}</span></h4>
+                            <p class="card-text text-black">{{ annonce.annonceTexte}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mr-0 d-flex">
+                        <div class="card-block m-auto">
+                            <h3><span class="badge badge-info">{{ annonce.annoncePrix }} €</span></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
         {% else %}
             <tr>
                 <td colspan="6">Il n'y a pas d'annonces à afficher</td>
             </tr>
         {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('annonces_new') }}">Rédiger une nouvelle annonce</a>
 {% endblock %}
+
+
+
