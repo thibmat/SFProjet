@@ -74,10 +74,22 @@ class User implements UserInterface
      */
     private $annonces;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isValid;
+
+    /**
+     * @ORM\Column(type="string", length=32)
+     */
+    private $token;
+
     public function __construct()
     {
         $this->annonces = new ArrayCollection();
         $this->createdAt = new \DateTime();
+        $this->isValid = 0;
+        $this->token = md5(microtime(TRUE)*100000);
     }
     public function __toString():string
     {
@@ -265,6 +277,30 @@ class User implements UserInterface
     public function setUserMail(string $userMail): self
     {
         $this->userMail = $userMail;
+
+        return $this;
+    }
+
+    public function getIsValid(): ?bool
+    {
+        return $this->isValid;
+    }
+
+    public function setIsValid(?bool $isValid): self
+    {
+        $this->isValid = $isValid;
+
+        return $this;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function setToken(string $token): self
+    {
+        $this->token = $token;
 
         return $this;
     }

@@ -32,8 +32,7 @@ body {
     padding: 25px;
 }
 #registerModal .form-group {
-    margin-bottom: 20px;
-    margin:auto;
+    margin: 0 auto 20px;
     width:100%;
 }
 #registerModal label {
@@ -67,7 +66,7 @@ body {
     min-width: 140px;
     outline: none !important;
 }
-#registerModal .btn:hover, .modal-login .btn:focus {
+#registerModal .btn:hover, .btn:focus {
     background: #179b81;
 }
 #registerModal .hint-text {

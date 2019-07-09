@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use Doctrine\Common\Persistence\ObjectManager;
 use Swift_Mailer;
+use Swift_Message;
+use Swift_Image;
 use App\Form\RegistrationFormType;
 use App\Security\AuthAuthenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,6 +24,7 @@ class RegistrationController extends AbstractController
      * @param UserPasswordEncoderInterface $passwordEncoder
      * @param GuardAuthenticatorHandler $guardHandler
      * @param AuthAuthenticator $authenticator
+     * @param ObjectManager $entityManager
      * @param Swift_Mailer $mailer
      * @return Response
      */
@@ -29,6 +33,7 @@ class RegistrationController extends AbstractController
         UserPasswordEncoderInterface $passwordEncoder,
         GuardAuthenticatorHandler $guardHandler,
         AuthAuthenticator $authenticator,
+        ObjectManager $entityManager,
         Swift_Mailer $mailer
     ): Response
     {
@@ -44,24 +49,23 @@ class RegistrationController extends AbstractController
                     $form->get('plainPassword')->getData()
                 )
             );
-
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
-
             // do anything else you need here, like send an email
-            $message = (new Swift_Message('Bienvenue sur www.mondocine.com'))
+            $message = (new Swift_Message('Bienvenue sur broc.com'))
                 ->setContentType("text/html")
                 ->setFrom('tibdoranco@gmail.com')
-                ->setTo($user->getEmail())
+                ->setTo($user->getUserMail())
             ;
-            $img = $message->embed(Swift_Image::fromPath('img/divers/logoBlack.svg'));
+            $img = $message->embed(Swift_Image::fromPath('img/divers/logo_black.svg'));
             $message->setBody(
                 $this->renderView(
                     'hello.html.twig',
                     [
-                        'name' => $user->getEmail(),
-                        'img' => $img
+                        'name' => $user->getUserMail(),
+                        'id'=>$user->getId(),
+                        'img' => $img,
+                        'token'=>$user->getToken()
                     ]
                 )
             );
@@ -78,5 +82,26 @@ class RegistrationController extends AbstractController
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("/activation/{id}/{token}", name="app_validCompte")
+     * @param User $user
+     * @param string $token
+     * @param ObjectManager $entityManager
+     * @return Response
+     */
+    public function validCompte(
+        User $user,
+        string $token,
+        ObjectManager $entityManager
+    ): Response
+    {
+        if ($user->getToken() === $token){
+            $user->setIsValid(1);
+            $entityManager->flush();
+            $this->addFlash('success', 'Votre compte a bien été validé, bienvenue!');
+        }
+        return $this->redirectToRoute('index');
     }
 }
