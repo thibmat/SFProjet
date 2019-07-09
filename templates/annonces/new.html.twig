@@ -1,11 +1,16 @@
 {% extends 'base.html.twig' %}
+{% import "macro/macro.html" as macros %}
 
 {% block title %}Créer une nouvelle annonce{% endblock %}
 
 {% block body %}
     <h1>Créer une nouvelle annonce</h1>
+    {{ macros.menu_cats(categories) }}
+
+
 
     {{ include('annonces/_form.html.twig') }}
+
 
     <a href="{{ path('annonces_index') }}">Retour à la liste</a>
 {% endblock %}

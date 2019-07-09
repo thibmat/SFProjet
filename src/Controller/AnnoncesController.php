@@ -6,6 +6,7 @@ use App\Entity\Annonces;
 use App\Entity\Image;
 use App\Form\AnnoncesType;
 use App\Repository\AnnoncesRepository;
+use App\Repository\CategoriesRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,8 +47,11 @@ class AnnoncesController extends AbstractController
      * @param ObjectManager $entityManager
      * @return Response
      */
-    public function new(Request $request, ObjectManager $entityManager): Response
+    public function new(Request $request, ObjectManager $entityManager, CategoriesRepository $categoryRepository): Response
     {
+        $categories = $categoryRepository->findBy([
+            'categorieMere' => null
+        ]);
         $annonce = new Annonces();
         $form = $this->createForm(AnnoncesType::class, $annonce);
         $form->handleRequest($request);
@@ -66,6 +70,7 @@ class AnnoncesController extends AbstractController
         return $this->render('annonces/new.html.twig', [
             'annonce' => $annonce,
             'form' => $form->createView(),
+            'categories'=>$categories
         ]);
     }
     /**

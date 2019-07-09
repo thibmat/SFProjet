@@ -1,0 +1,15 @@
+{% macro menu_cats(categories) %}
+<select>
+    {% for cat in categories %}
+
+                <option value="{{ cat }}">{{ cat }}</option>
+            {% if cat.getCategorieEnfant() is not null %}
+                {%for catEnfant in cat.getCategorieEnfant() %}}
+                    <option>
+                        --{{ catEnfant }}
+                    </option>
+                {% endfor %}
+            {% endif %}
+    {% endfor %}
+</select>
+{% endmacro %}
