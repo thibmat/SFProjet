@@ -29,6 +29,11 @@ class User implements UserInterface
     private $userName;
 
     /**
+     * @ORM\Column(type="string", length=160)
+     */
+    private $userMail;
+
+    /**
      * @ORM\Column(type="json")
      */
     private $roles = [];
@@ -248,6 +253,18 @@ class User implements UserInterface
             $this->annonces->removeElement($annonce);
             $annonce->removeUserId($this);
         }
+
+        return $this;
+    }
+
+    public function getUserMail(): ?string
+    {
+        return $this->userMail;
+    }
+
+    public function setUserMail(string $userMail): self
+    {
+        $this->userMail = $userMail;
 
         return $this;
     }
