@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -84,12 +85,18 @@ class User implements UserInterface
      */
     private $token;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Annonces", mappedBy="author", orphanRemoval=true)
+     */
+    private $annoncesRedigees;
+
     public function __construct()
     {
         $this->annonces = new ArrayCollection();
         $this->createdAt = new \DateTime();
         $this->isValid = 0;
         $this->token = md5(microtime(TRUE)*100000);
+        $this->annoncesRedigees = new ArrayCollection();
     }
     public function __toString():string
     {
@@ -157,7 +164,7 @@ class User implements UserInterface
      */
     public function getSalt()
     {
-        // not needed when using the "bcrypt" algorithm in security.yaml
+        // not needed when using the "bcrypt" algorithm in user.yaml
     }
 
     /**
@@ -301,6 +308,37 @@ class User implements UserInterface
     public function setToken(string $token): self
     {
         $this->token = $token;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Annonces[]
+     */
+    public function getAnnoncesRedigees(): Collection
+    {
+        return $this->annoncesRedigees;
+    }
+
+    public function addAnnoncesRedigee(Annonces $annoncesRedigee): self
+    {
+        if (!$this->annoncesRedigees->contains($annoncesRedigee)) {
+            $this->annoncesRedigees[] = $annoncesRedigee;
+            $annoncesRedigee->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAnnoncesRedigee(Annonces $annoncesRedigee): self
+    {
+        if ($this->annoncesRedigees->contains($annoncesRedigee)) {
+            $this->annoncesRedigees->removeElement($annoncesRedigee);
+            // set the owning side to null (unless already changed)
+            if ($annoncesRedigee->getAuthor() === $this) {
+                $annoncesRedigee->setAuthor(null);
+            }
+        }
 
         return $this;
     }

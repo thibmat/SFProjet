@@ -47,4 +47,19 @@ class CategoriesRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function getCategoriesByParent(Categories $parent = null)
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->orderBy('c.categoryLibelle', 'ASC');
+
+        if (is_null($parent)) {
+            $qb->andWhere('c.category IS NULL');
+        } else {
+            $qb->andWhere('c.category = :parent')
+                ->setParameter('parent', $parent->getId());
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

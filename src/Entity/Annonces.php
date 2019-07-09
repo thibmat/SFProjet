@@ -5,9 +5,13 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\AnnoncesRepository")
+ * @ORM\HasLifecycleCallbacks()
+ *
  */
 class Annonces
 {
@@ -20,11 +24,19 @@ class Annonces
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(
+     *     min = 4,
+     *     max = 255
+     * )
      */
     private $annonceTitre;
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\Length(
+     *     min = 25,
+     *     max = 4000
+     * )
      */
     private $annonceTexte;
 
@@ -34,7 +46,12 @@ class Annonces
     private $isPublished;
 
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="decimal", precision=9, scale=2)
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *     min=0,
+     *     max=999999.99
+     * )
      */
     private $annoncePrix;
 
@@ -48,6 +65,17 @@ class Annonces
      * @ORM\JoinColumn(nullable=false)
      */
     private $category;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Image", inversedBy="annonces")
+     */
+    private $image;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="annoncesRedigees")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $author;
 
     public function __construct()
     {
@@ -141,6 +169,30 @@ class Annonces
     public function setCategory(?Categories $category): self
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function getImage(): ?Image
+    {
+        return $this->image;
+    }
+
+    public function setImage(?Image $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?User $author): self
+    {
+        $this->author = $author;
 
         return $this;
     }

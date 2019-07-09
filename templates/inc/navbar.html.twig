@@ -2,7 +2,7 @@
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <img src="{{ asset('img/divers/shopping-bag-solid.svg') }}" style="width:20px;height:20px;">
+    <img src="{{ asset('img/divers/logo.svg') }}" style="width:20px;height:20px;margin:15px">
     <a class="navbar-brand" href="{{ path('home') }}">Broc'</a>
 
 
@@ -67,7 +67,7 @@
                     <a href="#loginModal" class="nav-link" data-toggle="modal">
                         <img src="{{ asset('img/divers/user-circle-regular.svg') }}" style="width:20px;height:20px;">
                     </a>
-                    {% include 'security/loginmodal.html.twig' %}
+                    {% include 'user/loginmodal.html.twig' %}
                 {% endif %}
 
             </li>

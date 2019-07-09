@@ -24,18 +24,29 @@ class Categories
     private $categoryLibelle;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Categories")
-     */
-    private $category;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Annonces", mappedBy="category")
      */
     private $annonces;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Categories", inversedBy="categorieEnfant")
+     */
+    private $categorieMere;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Categories", mappedBy="categorieMere")
+     */
+    private $categorieEnfant;
+
     public function __construct()
     {
         $this->annonces = new ArrayCollection();
+        $this->categorieEnfant = new ArrayCollection();
+    }
+
+    public function __toString():string
+    {
+        return $this->getCategoryLibelle();
     }
 
     public function getId(): ?int
@@ -51,18 +62,6 @@ class Categories
     public function setCategoryLibelle(string $categoryLibelle): self
     {
         $this->categoryLibelle = $categoryLibelle;
-
-        return $this;
-    }
-
-    public function getCategory(): ?self
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?self $category): self
-    {
-        $this->category = $category;
 
         return $this;
     }
@@ -92,6 +91,49 @@ class Categories
             // set the owning side to null (unless already changed)
             if ($annonce->getCategory() === $this) {
                 $annonce->setCategory(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCategorieMere(): ?self
+    {
+        return $this->categorieMere;
+    }
+
+    public function setCategorieMere(?self $categorieMere): self
+    {
+        $this->categorieMere = $categorieMere;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|self[]
+     */
+    public function getCategorieEnfant(): Collection
+    {
+        return $this->categorieEnfant;
+    }
+
+    public function addCategorieEnfant(self $categorieEnfant): self
+    {
+        if (!$this->categorieEnfant->contains($categorieEnfant)) {
+            $this->categorieEnfant[] = $categorieEnfant;
+            $categorieEnfant->setCategorieMere($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategorieEnfant(self $categorieEnfant): self
+    {
+        if ($this->categorieEnfant->contains($categorieEnfant)) {
+            $this->categorieEnfant->removeElement($categorieEnfant);
+            // set the owning side to null (unless already changed)
+            if ($categorieEnfant->getCategorieMere() === $this) {
+                $categorieEnfant->setCategorieMere(null);
             }
         }
 
