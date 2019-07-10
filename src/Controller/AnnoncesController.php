@@ -54,11 +54,15 @@ class AnnoncesController extends AbstractController
         $categories = $categoryRepository->findBy([
             'categorieMere' => null
         ]);
+        if (empty($categories)){
+            $cats = [];
+        }
         foreach ($categories as $cat){
             $sousCatCollec = $cat->getCategorieEnfant();
             if (sizeof($sousCatCollec->toArray()) > 0 )
             {
-                foreach ( $sousCatCollec as $enfants)
+                $sousCat = [];
+                foreach ($sousCatCollec as $enfants)
                 {
                     $sousCat[$enfants->getCategoryLibelle()] = $enfants;
                     $cats[$cat->getCategoryLibelle()] = $sousCat;
@@ -99,7 +103,7 @@ class AnnoncesController extends AbstractController
      * @param ImageRepository $imageRepository
      * @return Response
      */
-    public function show(int $id, AnnoncesRepository $repository, ImageRepository $imageRepository): Response
+    public function show(int $id, AnnoncesRepository $repository, ImageRepository $imageRepository, ObjectManager $entityManager): Response
     {
         $annonce = $repository->findOneBy([
             'id' => $id,
@@ -112,6 +116,8 @@ class AnnoncesController extends AbstractController
             throw $this->createNotFoundException('Annonce non trouvée');
         }
         $annonce->setNbViews($annonce->getNbViews() + 1);
+        $entityManager->flush();
+
         return $this->render('annonces/show.html.twig', [
             'annonce' => $annonce,
             'images' => $images

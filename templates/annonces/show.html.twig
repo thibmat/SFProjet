@@ -3,31 +3,38 @@
 {% block title %}Détail de l'annonce{% endblock %}
 
 {% block body %}
-    <h1>Detail de l'annonce</h1>
-    <div class="card p-3 vh-100">
+    <div class="card p-3">
         <div class="card-header w-100  mb-4">
-            <h4 class="text-right"><span class="badge badge-success">{{ annonce.category }}</span></h4>
-            <h3 class="text-left">{{ annonce.annonceTitre }} </h3>
-            <h3><span class="badge badge-info">{{ annonce.annoncePrix }} €</span></h3>
-        </div>
-        <div class="row">
-            {{ macros.caroussel(images) }}
-            <div class="col-md-7 px-3">
-                <div class="card-block px-3">
-                    <h4 class="card-title d-block">{{ annonce.annonceTitre }} </h4>
-                    <p class="card-text text-black">{{ annonce.annonceTexte}}</p>
-                </div>
+            <div class="row justify-content-between mx-4">
+                <h3><span class="badge badge-success">{{ annonce.category }}</span></h3>
+                <h2 class=""><span class="badge badge-info">{{ annonce.annoncePrix }} €</span></h2>
             </div>
+            <h1 class="text-center">{{ annonce.annonceTitre | title }} </h1>
 
         </div>
-
-    </div>
-
-    <div class="col-sm-6">
-        <p>
+        <a href="{{ path('message_new',{'id':annonce.id}) }}" class="text-right">
+            <img src="{{ asset('img/divers/envelope-regular.svg') }}" style="width:30px;height:30px;filter: invert(50%)" title="Contacter l'auteur de l'annonce">
+        </a>
+        <p class="text-left">
             Annonce publiée le {{ annonce.createdAt| date('d/m/Y') }}, vue {{ annonce.nbViews }} fois
         </p>
-        <a href="{{ path('annonces_index') }}"><button type="submit" class="btn-primary btn">Retour à la liste</button></a>
-        {{ include('annonces/_delete_form.html.twig') }}
+            {{ macros.caroussel(images) }}
+        <div class="row justify-content-center">
+            <div class="col-md-11 p-3">
+                <div class="card-block px-4">
+                    <h4 class="card-title d-block">{{ annonce.annonceTitre }} </h4>
+                    <p class="card-text text-black">{{ annonce.annonceTexte }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-around">
+            <div class="col-sm-2">
+                <a href="{{ path('annonces_index') }}"><button type="submit" class="btn-primary btn">Retour à la liste</button></a>
+            </div>
+            <div class="col-sm-10 text-right">
+                {{ include('annonces/_delete_form.html.twig') }}
+            </div>
+        </div>
     </div>
+
 {% endblock %}

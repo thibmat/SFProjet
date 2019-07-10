@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rédiger un nouveau message{% endblock %}
+
+{% block body %}
+    <h1>Rédiger un message</h1>
+
+    {{ include('message/_form.html.twig') }}
+    <div class="text-right">
+        <button class="btn btn-outline-success d-inline">{{ button_label|default('Envoyer !') }}</button>
+    </div>
+    {{ form_end(form) }}
+    <a class="btn btn-outline-info"  href="{{ path('annonces_show',{'id':annonce.id}) }}">Retour à l'annonce</a>
+{% endblock %}

@@ -1,0 +1,5 @@
+<form method="post" class="d-inline" action="{{ path('message_delete', {'id': message.id}) }}" onsubmit="return confirm('Etes vous sur de vouloir effacer ce message ?');">
+    <input type="hidden" name="_method" value="DELETE">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ message.id) }}">
+    <button class="card-link btn btn-outline-danger">Supprimer</button>
+</form>

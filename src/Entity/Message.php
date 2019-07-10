@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MessageRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Message
 {
@@ -41,6 +43,19 @@ class Message
      */
     private $annonce;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $destinataire;
+
+    /**
+     * @ORM\PrePersist
+     * @throws \Exception
+     */
+    public function setDefaultValues()
+    {
+        $this->setCreatedAt(new DateTime());
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -102,6 +117,18 @@ class Message
     public function setAnnonce(?Annonces $annonce): self
     {
         $this->annonce = $annonce;
+
+        return $this;
+    }
+
+    public function getDestinataire(): ?int
+    {
+        return $this->destinataire;
+    }
+
+    public function setDestinataire(int $destinataire): self
+    {
+        $this->destinataire = $destinataire;
 
         return $this;
     }

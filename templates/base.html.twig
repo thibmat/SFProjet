@@ -11,11 +11,11 @@
         <link rel="stylesheet" href="/css/style.css">
     {% endblock %}
 </head>
-<body>
+<body class="bg-secondary">
 {% block navbar %}
     {% include 'inc/navbar.html.twig' %}
 {% endblock %}
-<main class="container">
+<main class="container-fluid shadow p-3 mb-5 bg-white rounded" style="max-width:95%;">
     {% for type, messages in app.flashes %}
         {% for message in messages %}
             <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
