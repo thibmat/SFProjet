@@ -1,6 +1,21 @@
-#easy_admin:
-#    entities:
-#        # List the entity class name you want to manage
-#        - App\Entity\Product
-#        - App\Entity\Category
-#        - App\Entity\User
+easy_admin:
+    entities:
+        Annonces:
+            class: App\Entity\Annonces
+#form:
+#   fields:
+#      - name
+#     - description
+#    - price
+#   - isPublished
+#   - imageName
+#   - categories
+#   - author
+#   - tags
+#list:
+#   fields: [name,isPublished, categories, author]
+        Categories:
+            class: App\Entity\Categories
+        User:
+            class: App\Entity\User
+    site_name: Administration Broc

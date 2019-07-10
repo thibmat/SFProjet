@@ -1,18 +1,25 @@
 {% extends 'base.html.twig' %}
-{% import "macro/macro.html" as macros %}
+{#{% import "macro/macro.html" as macros %}#}
 
 {% block title %}Créer une nouvelle annonce{% endblock %}
 
 {% block body %}
     <h1>Créer une nouvelle annonce</h1>
-    {{ macros.menu_cats(categories) }}
+    {#{{ macros.menu_cats(categories) }}#}
 
 
 
     {{ include('annonces/_form.html.twig') }}
 
-
-    <a href="{{ path('annonces_index') }}">Retour à la liste</a>
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <a href="{{ path('annonces_index') }}"><button type="submit" class="btn-primary btn">Retour à la liste</button></a>
+        </div>
+        <div class="col-sm-10 text-right">
+            <button type="submit" class="btn-success btn">Créer l’annonce</button>
+        </div>
+    </div>
+    {{ form_end(form) }}
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}

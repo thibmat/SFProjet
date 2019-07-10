@@ -67,13 +67,6 @@ class Annonces
     private $category;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Image", inversedBy="annonces")
-     * @Assert\Type(type="App\Entity\Image")
-     * @Assert\Valid
-     */
-    private $image;
-
-    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="annoncesRedigees")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -89,11 +82,23 @@ class Annonces
      */
     private $nbViews;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Image", mappedBy="annonces", orphanRemoval=true)
+     * @var string
+     */
+    private $image;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="annonce")
+     */
+    private $messages;
+
     public function __construct()
     {
         $this->userId = new ArrayCollection();
+        $this->image = new ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
-
     /**
      * Initialise les valeurs par défault lors de la création de l'annonce
      * @ORM\PrePersist
@@ -102,6 +107,10 @@ class Annonces
     {
         $this->createdAt = new DateTime();
         $this->setNbViews(0);
+    }
+    public function __toString()
+    {
+       return $this->getAnnonceTitre();
     }
 
     public function getId(): ?int
@@ -195,18 +204,6 @@ class Annonces
         return $this;
     }
 
-    public function getImage(): ?Image
-    {
-        return $this->image;
-    }
-
-    public function setImage(?Image $image): self
-    {
-        $this->image = $image;
-
-        return $this;
-    }
-
     public function getAuthor(): ?User
     {
         return $this->author;
@@ -239,6 +236,68 @@ class Annonces
     public function setNbViews(?int $nbViews): self
     {
         $this->nbViews = $nbViews;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Image[]
+     */
+    public function getImage(): Collection
+    {
+        return $this->image;
+    }
+
+    public function addImage(Image $image): self
+    {
+        if (!$this->image->contains($image)) {
+            $this->image[] = $image;
+            $image->setAnnonces($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Image $image): self
+    {
+        if ($this->image->contains($image)) {
+            $this->image->removeElement($image);
+            // set the owning side to null (unless already changed)
+            if ($image->getAnnonces() === $this) {
+                $image->setAnnonces(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Message[]
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): self
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages[] = $message;
+            $message->setAnnonce($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): self
+    {
+        if ($this->messages->contains($message)) {
+            $this->messages->removeElement($message);
+            // set the owning side to null (unless already changed)
+            if ($message->getAnnonce() === $this) {
+                $message->setAnnonce(null);
+            }
+        }
 
         return $this;
     }

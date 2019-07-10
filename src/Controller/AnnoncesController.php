@@ -7,6 +7,7 @@ use App\Entity\Image;
 use App\Form\AnnoncesType;
 use App\Repository\AnnoncesRepository;
 use App\Repository\CategoriesRepository;
+use App\Repository\ImageRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,6 +46,7 @@ class AnnoncesController extends AbstractController
      * @Route("/new", name="annonces_new", methods={"GET","POST"})
      * @param Request $request
      * @param ObjectManager $entityManager
+     * @param CategoriesRepository $categoryRepository
      * @return Response
      */
     public function new(Request $request, ObjectManager $entityManager, CategoriesRepository $categoryRepository): Response
@@ -52,35 +54,59 @@ class AnnoncesController extends AbstractController
         $categories = $categoryRepository->findBy([
             'categorieMere' => null
         ]);
+        foreach ($categories as $cat){
+            $sousCatCollec = $cat->getCategorieEnfant();
+            if (sizeof($sousCatCollec->toArray()) > 0 )
+            {
+                foreach ( $sousCatCollec as $enfants)
+                {
+                    $sousCat[$enfants->getCategoryLibelle()] = $enfants;
+                    $cats[$cat->getCategoryLibelle()] = $sousCat;
+                }
+            }
+            else
+            {
+                $cats[$cat->getCategoryLibelle()] = $cat->getId();
+            }
+        }
         $annonce = new Annonces();
-        $form = $this->createForm(AnnoncesType::class, $annonce);
+        $form = $this->createForm(AnnoncesType::class, $annonce, [
+            'categories' => $cats
+        ]);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             $user  = $this->getUser();
-            $image = $form->get("imageFile")->getData();
-            $entityManager->persist($image);
-            $entityManager->flush();
             $annonce->setAuthor($user);
-            $annonce->setImage($image);
+            $image = $form->get("imageFile")->getData();
+            $annonce->addImage($image);
             $entityManager->persist($annonce);
+            $image-> setAnnonces($annonce);
+            $entityManager->persist($image);
             $entityManager->flush();
             return $this->redirectToRoute('annonces_index');
         }
         return $this->render('annonces/new.html.twig', [
             'annonce' => $annonce,
             'form' => $form->createView(),
-            'categories'=>$categories
+            'categories'=>$categories,
         ]);
     }
+
     /**
      * @Route("/{id}", name="annonces_show", methods={"GET"})
+     * @param int $id
+     * @param AnnoncesRepository $repository
+     * @param ImageRepository $imageRepository
+     * @return Response
      */
-    public function show(int $id, AnnoncesRepository $repository): Response
+    public function show(int $id, AnnoncesRepository $repository, ImageRepository $imageRepository): Response
     {
         $annonce = $repository->findOneBy([
             'id' => $id,
             'isPublished' => true
+        ]);
+        $images = $imageRepository->findBy([
+            'annonces'=>$id
         ]);
         if (!$annonce) {
             throw $this->createNotFoundException('Annonce non trouvée');
@@ -88,6 +114,7 @@ class AnnoncesController extends AbstractController
         $annonce->setNbViews($annonce->getNbViews() + 1);
         return $this->render('annonces/show.html.twig', [
             'annonce' => $annonce,
+            'images' => $images
         ]);
     }
     /**

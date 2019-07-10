@@ -14,8 +14,12 @@ class AnnoncesType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $categories = $options['categories'];
         $builder
-            ->add('category')
+            ->add('category', ChoiceType::class, [
+                'choices'=>$categories,
+                'label'=>'Categorie'
+                ])
             ->add('annonceTitre', null, [
                 'label'=>'Titre de l\'annonce'
             ])
@@ -28,17 +32,18 @@ class AnnoncesType extends AbstractType
             ->add(
                 'imageFile',
                 ImageType::class,[
-                    'mapped'=>false
+                    'mapped'=>false,
+                    'label'=>false
                 ]
             )
         ;
     }
 
-
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => Annonces::class,
+            'categories'=> ''
         ]);
     }
 }

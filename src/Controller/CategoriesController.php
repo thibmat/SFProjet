@@ -17,11 +17,14 @@ class CategoriesController extends AbstractController
 {
     /**
      * @Route("/", name="categories_index", methods={"GET"})
+     * @param CategoriesRepository $categoriesRepository
+     * @return Response
      */
-    public function index(CategoriesRepository $categoriesRepository): Response
+    public function index(): Response
     {
+        $repository = $this->getDoctrine()->getRepository(Categories::class);
         return $this->render('categories/index.html.twig', [
-            'categories' => $categoriesRepository->findBy([
+            'categories' => $repository->findBy([
                 'categorieMere' => null
             ])
         ]);
@@ -33,7 +36,7 @@ class CategoriesController extends AbstractController
     public function new(Request $request): Response
     {
         $category = new Categories();
-        $form = $this->createForm(CategoriesType::class, $category);
+        $form = $this->createForm(CategoriesType::class, $category );
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

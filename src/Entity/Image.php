@@ -35,23 +35,30 @@ class Image
 
     /**
      * @Vich\UploadableField(mapping="annonces_images", fileNameProperty="imageName")
-     * @var File
+     * @var File|null
      */
     private $imageFile;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Annonces", mappedBy="image")
-     */
-    private $annonces;
 
     /**
      * @ORM\Column(type="datetime")
      */
     private $uploadedAt;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Annonces", inversedBy="image")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $annonces;
+
     public function __construct()
     {
-        $this->annonces = new ArrayCollection();
+
+    }
+
+    public function __toString():string
+    {
+        return $this->imageName;
     }
 
     public function getId(): ?int
@@ -70,38 +77,6 @@ class Image
 
         return $this;
     }
-
-    /**
-     * @return Collection|Annonces[]
-     */
-    public function getAnnonces(): Collection
-    {
-        return $this->annonces;
-    }
-
-    public function addAnnonce(Annonces $annonce): self
-    {
-        if (!$this->annonces->contains($annonce)) {
-            $this->annonces[] = $annonce;
-            $annonce->setImage($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAnnonce(Annonces $annonce): self
-    {
-        if ($this->annonces->contains($annonce)) {
-            $this->annonces->removeElement($annonce);
-            // set the owning side to null (unless already changed)
-            if ($annonce->getImage() === $this) {
-                $annonce->setImage(null);
-            }
-        }
-
-        return $this;
-    }
-
     /**
      * @return File
      */
@@ -131,6 +106,17 @@ class Image
     {
         $this->uploadedAt = $uploadedAt;
 
+        return $this;
+    }
+
+    public function getAnnonces(): ?Annonces
+    {
+        return $this->annonces;
+    }
+
+    public function setAnnonces(?Annonces $annonces): self
+    {
+        $this->annonces = $annonces;
         return $this;
     }
 }

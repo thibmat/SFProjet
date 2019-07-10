@@ -1,23 +1,17 @@
 {% extends 'base.html.twig' %}
-
+{% import "macro/carousel.html" as macros %}
 {% block title %}Détail de l'annonce{% endblock %}
 
 {% block body %}
     <h1>Detail de l'annonce</h1>
-
-    <div class="card p-3">
-        <div class="card-header w-100  mb-4"><h4 class="text-right"><span class="badge badge-success">{{ annonce.category }}</span></h4class><h3 class="text-left">{{ annonce.annonceTitre }} </h3></div>
+    <div class="card p-3 vh-100">
+        <div class="card-header w-100  mb-4">
+            <h4 class="text-right"><span class="badge badge-success">{{ annonce.category }}</span></h4>
+            <h3 class="text-left">{{ annonce.annonceTitre }} </h3>
+            <h3><span class="badge badge-info">{{ annonce.annoncePrix }} €</span></h3>
+        </div>
         <div class="row">
-            <div class="col-md-12 mr-0 d-flex justify-content-end">
-                <div class="card-block">
-                    <h3><span class="badge badge-info">{{ annonce.annoncePrix }} €</span></h3>
-                </div>
-            </div>
-
-            <div class="col-md-5 ">
-                <img src="{{ vich_uploader_asset(annonce.image, 'imageFile') }}" alt="image de {{ annonce.annonceTitre }}" class="w-100">
-            </div>
-
+            {{ macros.caroussel(images) }}
             <div class="col-md-7 px-3">
                 <div class="card-block px-3">
                     <h4 class="card-title d-block">{{ annonce.annonceTitre }} </h4>

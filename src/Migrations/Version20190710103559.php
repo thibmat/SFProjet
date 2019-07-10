@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20190709201423 extends AbstractMigration
+final class Version20190710103559 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -22,8 +22,7 @@ final class Version20190709201423 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('CREATE TABLE roles (id INT AUTO_INCREMENT NOT NULL, role_libelle VARCHAR(80) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE annonces ADD created_at DATETIME NOT NULL, ADD nb_views INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE image CHANGE annonces_id annonces_id INT NOT NULL');
     }
 
     public function down(Schema $schema) : void
@@ -31,7 +30,6 @@ final class Version20190709201423 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('DROP TABLE roles');
-        $this->addSql('ALTER TABLE annonces DROP created_at, DROP nb_views');
+        $this->addSql('ALTER TABLE image CHANGE annonces_id annonces_id INT DEFAULT NULL');
     }
 }
