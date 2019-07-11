@@ -67,10 +67,38 @@ class MessageController extends AbstractController
         }
         return $this->render('message/new.html.twig', [
             'message' => $message,
-            'form' => $form->createView(),
-            'annonce'=>$annonce
+            'form' => $form->createView()
         ]);
     }
+
+    /**
+     * @Route("/new/reply/{slug<[a-z0-9\_-]+>}/{id}", name="message_reply", methods={"GET","POST"})
+     * @param Request $request
+     * @param ObjectManager $entityManager
+     * @param Annonces $annonce
+     * @param Message $oldMessage
+     * @return Response
+     */
+    public function reply(Request $request, ObjectManager $entityManager,Annonces $annonce, Message $oldMessage): Response
+    {
+        $message = new Message();
+        $form = $this->createForm(MessageType::class, $message);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $message->setAnnonce($annonce);
+            $message->setDestinataire($oldMessage->getAuthor());
+            $message->setAuthor($this->getUser());
+            $this->sendMailMessage($message);
+            $entityManager->persist($message);
+            $entityManager->flush();
+            return $this->redirectToRoute('message_index');
+        }
+        return $this->render('message/new.html.twig', [
+            'message' => $message,
+            'form' => $form->createView()
+        ]);
+    }
+
 
     /**
      * @Route("/lire/{id}", name="message_show", methods={"GET"})

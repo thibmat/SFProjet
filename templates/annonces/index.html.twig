@@ -17,12 +17,12 @@
         <div id="prix" class="col-6">
             <h6 class="text-left text-white">Prix</h6>
             <div class="row justify-content-center h-50">
-                <div class="btn-info btn h-50 my-auto ml-4">
-                    <input type="text" id="min" readonly size="3" style="background:transparent;border:none;color:white;">
+                <div class="btn-info btn h-50 my-auto ml-4 d-table" >
+                    <span id="min" style="display:table-cell;vertical-align:middle;">0€</span>
                 </div>
                     <div id="slider-range"></div>
-                <div class="btn-info btn h-50 my-auto mr-4">
-                    <input type="text" id="max" readonly size="3" style="background:transparent;border:none;color:white;">
+                <div class="btn-info btn h-50 my-auto mr-4 d-table" >
+                    <span id="max" style="display:table-cell;vertical-align:middle;">1000€</span>
                 </div>
             </div>
             <a href="/annonces/prix/0/1000" class="btn-info btn" id="filtreprix">Appliquer</a>
@@ -70,14 +70,14 @@
                 values: [ {{ min | default(0)}}, {{ max | default(1000)}} ],
                 step: 1,
                 slide: function( event, ui ) {
-                    $( "#min" ).val(ui.values[ 0 ] + " €");
-                    $( "#max" ).val(ui.values[ 1 ] + " €");
+                    $( "#min" ).text(ui.values[ 0 ] + " €");
+                    $( "#max" ).text(ui.values[ 1 ] + " €");
                     lien = '/annonces/prix/'+ $( "#slider-range" ).slider( "values", 0 ) + '/' + $( "#slider-range" ).slider( "values", 1 );
                     $("#filtreprix").attr('href',lien);
                 }
             });
-            $( "#min" ).val($( "#slider-range" ).slider( "values", 0 ) + " €");
-            $( "#max" ).val($( "#slider-range" ).slider( "values", 1 ) + " €");
+            $( "#min" ).text($( "#slider-range" ).slider( "values", 0 ) + " €");
+            $( "#max" ).text($( "#slider-range" ).slider( "values", 1 ) + " €");
             var lien = '/annonces/prix/'+ $( "#slider-range" ).slider( "values", 0 ) + '/' + $( "#slider-range" ).slider( "values", 1 );
 
         } );

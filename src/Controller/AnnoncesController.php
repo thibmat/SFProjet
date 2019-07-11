@@ -226,6 +226,9 @@ class AnnoncesController extends AbstractController
             ->setParameter('category', $category)
             ->getQuery();
         $categories = $categoryRepository->findAll();
+        $categoriesMeres = $categoryRepository->findBy([
+            'categorieMere' => null
+        ]);
         $annonces = $paginator->paginate(
             $allAnnoncesFilteredByCategory, /* query NOT result */
             $request->query->getInt('page', 1), /*page number*/
@@ -234,7 +237,8 @@ class AnnoncesController extends AbstractController
         return $this->render('annonces/index.html.twig', [
             'annonces' => $annonces,
             'categories'=>$categories,
-            'categorySelected'=>$category
+            'categorySelected'=>$category,
+            'categoriesMeres'=>$categoriesMeres
         ]);
     }
     /**
@@ -261,6 +265,9 @@ class AnnoncesController extends AbstractController
             ->setParameter('max', $max)
             ->getQuery();
         $categories = $categoryRepository->findAll();
+        $categoriesMeres = $categoryRepository->findBy([
+            'categorieMere' => null
+        ]);
         $annonces = $paginator->paginate(
             $allAnnoncesFilteredByPrix, /* query NOT result */
             $request->query->getInt('page', 1), /*page number*/
@@ -270,7 +277,8 @@ class AnnoncesController extends AbstractController
             'annonces' => $annonces,
             'min'=>$min,
             'max'=>$max,
-            'categories' => $categories
+            'categories' => $categories,
+            'categoriesMeres'=>$categoriesMeres
          ]);
     }
 }

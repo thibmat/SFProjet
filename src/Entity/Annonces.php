@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Cocur\Slugify\Slugify;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -93,12 +94,29 @@ class Annonces
      */
     private $messages;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $slug;
+
     public function __construct()
     {
         $this->userId = new ArrayCollection();
         $this->image = new ArrayCollection();
         $this->messages = new ArrayCollection();
     }
+    /**
+     * Met a jour le slug par rapport au name
+     * @return Categories
+     */
+    public function updateSlug(): self
+    {
+        $slugify = new Slugify();
+        $username = $this->getAuthor()->getUsername();
+        $this->slug = $slugify->slugify($this->annonceTitre.$username);
+        return $this;
+    }
+
     /**
      * Initialise les valeurs par défault lors de la création de l'annonce
      * @ORM\PrePersist
@@ -107,6 +125,7 @@ class Annonces
     {
         $this->createdAt = new DateTime();
         $this->setNbViews(0);
+        $this->updateSlug();
     }
     public function __toString()
     {
@@ -298,6 +317,18 @@ class Annonces
                 $message->setAnnonce(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
 
         return $this;
     }
