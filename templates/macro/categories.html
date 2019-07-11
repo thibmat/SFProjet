@@ -1,0 +1,30 @@
+{% macro menu_cats(categoriesMere) %}
+<div class="btn-group">
+    {% for cat in categoriesMere %}
+    <a href="{{ path('annonces_filtered_category', {'slug': cat.slug})}}">
+        <button type="button" class="btn btn-info">{{ cat }}</button>
+    </a>
+        {% if cat.getCategorieEnfant() is not empty %}
+            <button type="button" class="btn btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only"></span>
+            </button>
+            <div class="dropdown-menu">
+                {%for catEnfant in cat.getCategorieEnfant() %}
+                    <a class="dropdown-item" href="{{ path('annonces_filtered_category', {'slug': catEnfant.slug})}}">{{ catEnfant }}</a>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endmacro %}
+
+
+
+
+
+
+
+
+
+
+

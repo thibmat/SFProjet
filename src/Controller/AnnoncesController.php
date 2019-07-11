@@ -34,6 +34,9 @@ class AnnoncesController extends AbstractController
             ->where('a.isPublished = 1')
             ->getQuery();
         $categories = $categoryRepository->findAll();
+        $categoriesMeres = $categoryRepository->findBy([
+            'categorieMere' => null
+        ]);
         $annonces = $paginator->paginate(
             $allAnnoncesQuery, /* query NOT result */
             $request->query->getInt('page', 1), /*page number*/
@@ -41,7 +44,8 @@ class AnnoncesController extends AbstractController
         );
         return $this->render('annonces/index.html.twig', [
             'annonces' => $annonces,
-            'categories'=>$categories
+            'categories'=>$categories,
+            'categoriesMeres'=>$categoriesMeres
         ]);
     }
 

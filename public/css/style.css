@@ -101,3 +101,17 @@ body {
 .modal-login .fa {
     font-size: 21px;
 }
+.ui-slider-handle {
+    outline: 0;
+    background: lightgrey;
+    border-radius: 50%;
+    top: -0.65em !important;
+}
+.ui-slider-horizontal {
+
+    height: .1em;
+    width: 50%;
+    border: none;
+    background: #ccc;
+    margin:auto
+}
