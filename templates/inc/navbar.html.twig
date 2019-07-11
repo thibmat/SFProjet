@@ -19,22 +19,6 @@
                     <span class="sr-only">(current)</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('annonces_index') }}">
-                    <i class="fa fa-envelope-o">
-                        {#<span class="badge badge-danger">11</span>#}
-                    </i>
-                    Les annonces
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link disabled" href="#">
-                    <i class="fa fa-envelope-o">
-                        {#<span class="badge badge-warning">11</span>#}
-                    </i>
-
-                </a>
-            </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="{{ path('annonces_index') }}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fa fa-envelope-o">
@@ -63,7 +47,10 @@
                 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                     <a href="" class="d-inline m-2">
                         <i class="fa fa-bell">
-                            <span class="badge badge-warning rounded-circle" id="nbreAnnonces">11</span>
+                            {{ render(controller(
+                                'App\\Controller\\AnnoncesController::getNumberAnnonces'
+
+                            )) }}
                         </i>
                         <img src="{{ asset('img/divers/scroll-solid.svg') }}" style="width:20px;height:20px;filter: invert(100%)" alt="mes annonces">
                     </a>

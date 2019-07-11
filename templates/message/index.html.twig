@@ -17,9 +17,33 @@
         <tbody>
         {% for message in messages %}
             <tr>
-                <td>{{ message.messageTitre }}</td>
-                <td>{{ message.messageTexte }}</td>
-                <td>{{ message.createdAt ? message.createdAt|date('Y-m-d H:i:s','Europe/Paris') : '' }}</td>
+                        <td>
+                            {% if not message.isRead %}
+                                <strong>
+                            {% endif %}
+                                {{ message.messageTitre }}
+                            {% if not message.isRead %}
+                                </strong>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not message.isRead %}
+                                <strong>
+                            {% endif %}
+                                {{ message.messageTexte }}
+                            {% if not message.isRead %}
+                                </strong>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not message.isRead %}
+                                <strong>
+                            {% endif %}
+                                {{ message.createdAt ? message.createdAt|date('Y-m-d H:i:s','Europe/Paris') : '' }}
+                            {% if not message.isRead %}
+                                </strong>
+                            {% endif %}
+                        </td>
                 <td>
                     <a class="card-link btn btn-outline-info" href="{{ path('message_show', {'id': message.id}) }}">Lire</a>
                     {{ include('message/_delete_form.html.twig') }}

@@ -44,9 +44,17 @@ class Message
     private $annonce;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="messages")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $destinataire;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="messageWritten")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $author;
+
 
     /**
      * @ORM\PrePersist
@@ -55,6 +63,7 @@ class Message
     public function setDefaultValues()
     {
         $this->setCreatedAt(new DateTime());
+        $this->setIsRead(0);
     }
     public function getId(): ?int
     {
@@ -121,15 +130,28 @@ class Message
         return $this;
     }
 
-    public function getDestinataire(): ?int
+    public function getDestinataire(): ?User
     {
         return $this->destinataire;
     }
 
-    public function setDestinataire(int $destinataire): self
+    public function setDestinataire(?User $destinataire): self
     {
         $this->destinataire = $destinataire;
 
         return $this;
     }
+
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?User $author): self
+    {
+        $this->author = $author;
+
+        return $this;
+    }
+
 }

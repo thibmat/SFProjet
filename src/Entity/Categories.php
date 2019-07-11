@@ -5,9 +5,11 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Cocur\Slugify\Slugify;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CategoriesRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Categories
 {
@@ -38,10 +40,33 @@ class Categories
      */
     private $categorieEnfant;
 
+    /**
+     * @ORM\Column(type="string", length=128)
+     */
+    private $slug;
+
     public function __construct()
     {
         $this->annonces = new ArrayCollection();
         $this->categorieEnfant = new ArrayCollection();
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setDefaultValues()
+    {
+        $this->updateSlug();
+    }
+    /**
+     * Met a jour le slug par rapport au name
+     * @return Categories
+     */
+    public function updateSlug(): self
+    {
+        $slugify = new Slugify();
+        $this->slug = $slugify->slugify($this->categoryLibelle);
+        return $this;
     }
 
     public function __toString():string
@@ -136,6 +161,18 @@ class Categories
                 $categorieEnfant->setCategorieMere(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
 
         return $this;
     }

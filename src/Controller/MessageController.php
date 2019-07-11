@@ -3,12 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\Annonces;
+use App\Entity\User;
 use App\Entity\Message;
 use App\Form\MessageType;
 use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use Doctrine\Common\Persistence\ObjectManager;
-use http\Client\Curl\User;
+use Swift_Image;
+use Swift_Mailer;
+use Swift_Message;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +22,14 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class MessageController extends AbstractController
 {
+
+    private $mailer;
+
+    public function __construct(Swift_Mailer $mailer)
+    {
+        $this->mailer = $mailer;
+    }
+
     /**
      * @Route("/", name="message_index", methods={"GET"})
      */
@@ -47,13 +58,13 @@ class MessageController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $message->setAnnonce($annonce);
-            $message->setDestinataire($annonce->getAuthor()->getId());
+            $message->setDestinataire($annonce->getAuthor());
+            $message->setAuthor($this->getUser());
+            $this->sendMailMessage($message);
             $entityManager->persist($message);
             $entityManager->flush();
-
             return $this->redirectToRoute('message_index');
         }
-
         return $this->render('message/new.html.twig', [
             'message' => $message,
             'form' => $form->createView(),
@@ -102,5 +113,31 @@ class MessageController extends AbstractController
         return $this->render(
             'inc/numberMessage.html.twig',
             ['nbreMessage' => $nbreMessage]);
+    }
+
+    /**
+     * @param Message $message
+     * @param Swift_Mailer $mailer
+     */
+    public function sendMailMessage(Message $message):void
+    {
+        $mail = (new Swift_Message('broc.com : Vous avez un nouveau message'))
+            ->setContentType("text/html")
+            ->setFrom('tibdoranco@gmail.com')
+            ->setTo($message->getDestinataire()->getUserMail())
+        ;
+        $img = $mail->embed(Swift_Image::fromPath('img/divers/logo_black.svg'));
+        $mail->setBody(
+            $this->renderView(
+                'message.html.twig',
+                [
+                    'messageTitre' => $message->getMessageTitre(),
+                    'messageTexte' => $message->getMessageTexte(),
+                    'messageAnnonce'=> $message->getAnnonce()->getAnnonceTitre(),
+                    'img' => $img,
+                ]
+            )
+        );
+        $this->mailer->send($mail);
     }
 }

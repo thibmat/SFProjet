@@ -90,6 +90,16 @@ class User implements UserInterface
      */
     private $annoncesRedigees;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="destinataire", orphanRemoval=true)
+     */
+    private $messages;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="author", orphanRemoval=true)
+     */
+    private $messageWritten;
+
     public function __construct()
     {
         $this->annonces = new ArrayCollection();
@@ -97,6 +107,8 @@ class User implements UserInterface
         $this->isValid = 0;
         $this->token = md5(microtime(TRUE)*100000);
         $this->annoncesRedigees = new ArrayCollection();
+        $this->messages = new ArrayCollection();
+        $this->messageWritten = new ArrayCollection();
     }
     public function __toString():string
     {
@@ -337,6 +349,68 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($annoncesRedigee->getAuthor() === $this) {
                 $annoncesRedigee->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Message[]
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): self
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages[] = $message;
+            $message->setDestinataire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): self
+    {
+        if ($this->messages->contains($message)) {
+            $this->messages->removeElement($message);
+            // set the owning side to null (unless already changed)
+            if ($message->getDestinataire() === $this) {
+                $message->setDestinataire(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Message[]
+     */
+    public function getMessageWritten(): Collection
+    {
+        return $this->messageWritten;
+    }
+
+    public function addMessageWritten(Message $messageWritten): self
+    {
+        if (!$this->messageWritten->contains($messageWritten)) {
+            $this->messageWritten[] = $messageWritten;
+            $messageWritten->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessageWritten(Message $messageWritten): self
+    {
+        if ($this->messageWritten->contains($messageWritten)) {
+            $this->messageWritten->removeElement($messageWritten);
+            // set the owning side to null (unless already changed)
+            if ($messageWritten->getAuthor() === $this) {
+                $messageWritten->setAuthor(null);
             }
         }
 

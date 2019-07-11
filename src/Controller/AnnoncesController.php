@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Annonces;
+use App\Entity\Categories;
 use App\Entity\Image;
 use App\Form\AnnoncesType;
 use App\Repository\AnnoncesRepository;
@@ -27,18 +28,46 @@ class AnnoncesController extends AbstractController
      * @param PaginatorInterface $paginator
      * @return Response
      */
-    public function index(Request $request, AnnoncesRepository $annoncesRepository, PaginatorInterface $paginator): Response
+    public function index(Request $request, AnnoncesRepository $annoncesRepository, CategoriesRepository $categoryRepository, PaginatorInterface $paginator): Response
     {
         $allAnnoncesQuery = $annoncesRepository->createQueryBuilder('a')
             ->where('a.isPublished = 1')
             ->getQuery();
+        $categories = $categoryRepository->findAll();
         $annonces = $paginator->paginate(
             $allAnnoncesQuery, /* query NOT result */
             $request->query->getInt('page', 1), /*page number*/
             20 /*limit per page*/
         );
         return $this->render('annonces/index.html.twig', [
-            'annonces' => $annonces
+            'annonces' => $annonces,
+            'categories'=>$categories
+        ]);
+    }
+
+    /**
+     * @Route("/my", name="annonces_myIndex", methods={"GET"})
+     * @param Request $request
+     * @param AnnoncesRepository $annoncesRepository
+     * @param CategoriesRepository $categoryRepository
+     * @param PaginatorInterface $paginator
+     * @return Response
+     */
+    public function mesAnnonces(Request $request, AnnoncesRepository $annoncesRepository, CategoriesRepository $categoryRepository, PaginatorInterface $paginator): Response
+    {
+        $allAnnoncesQuery = $annoncesRepository->createQueryBuilder('a')
+            ->Where('a.author = :user')
+            ->setParameter('user', $this->getUser())
+            ->getQuery();
+        $categories = $categoryRepository->findAll();
+        $annonces = $paginator->paginate(
+            $allAnnoncesQuery, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            20 /*limit per page*/
+        );
+        return $this->render('annonces/myIndex.html.twig', [
+            'annonces' => $annonces,
+            'categories'=>$categories
         ]);
     }
 
@@ -155,5 +184,89 @@ class AnnoncesController extends AbstractController
             $entityManager->flush();
         }
         return $this->redirectToRoute('annonces_index');
+    }
+    public function getNumberAnnonces(AnnoncesRepository $annoncesRepository):Response
+    {
+        $user = $this->getUser();
+        $n = $annoncesRepository->createQueryBuilder('ann');
+        $n->select('count(ann.author)');
+        $nbreAnnonces = $n
+            ->where('ann.author = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getSingleScalarResult();
+        return $this->render(
+            'inc/numberAnnonces.html.twig',
+            ['nbreAnnonces' => $nbreAnnonces]);
+    }
+
+    /**
+     * @Route("/category/{slug<[a-z0-9\-]+>}", name="annonces_filtered_category", methods={"GET"})
+     * @param Request $request
+     * @param AnnoncesRepository $annoncesRepository
+     * @param CategoriesRepository $categoryRepository
+     * @param Categories $category
+     * @param PaginatorInterface $paginator
+     * @return Response
+     */
+    public function filterByCatgeorie (
+        Request $request,
+        AnnoncesRepository $annoncesRepository,
+        CategoriesRepository $categoryRepository,
+        Categories $category,
+        PaginatorInterface $paginator
+    ):Response
+    {
+        $allAnnoncesFilteredByCategory = $annoncesRepository->createQueryBuilder('a')
+            ->where('a.category = :category')
+            ->setParameter('category', $category)
+            ->getQuery();
+        $categories = $categoryRepository->findAll();
+        $annonces = $paginator->paginate(
+            $allAnnoncesFilteredByCategory, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            20 /*limit per page*/
+        );
+        return $this->render('annonces/index.html.twig', [
+            'annonces' => $annonces,
+            'categories'=>$categories,
+            'categorySelected'=>$category
+        ]);
+    }
+    /**
+     * @Route("/prix/{min}/{max}", name="annonces_filtered_prix", methods={"GET"})
+     * @param Request $request
+     * @param AnnoncesRepository $annoncesRepository
+     * @param CategoriesRepository $categoryRepository
+     * @param Categories $category
+     * @param PaginatorInterface $paginator
+     * @return Response
+     */
+    public function filterByPrix (
+        Request $request,
+        AnnoncesRepository $annoncesRepository,
+        PaginatorInterface $paginator,
+        CategoriesRepository $categoryRepository,
+        int $min,
+        int $max
+    ):Response
+    {
+        $allAnnoncesFilteredByPrix = $annoncesRepository->createQueryBuilder('a')
+            ->where('a.annoncePrix > :min AND a.annoncePrix < :max')
+            ->setParameter('min', $min)
+            ->setParameter('max', $max)
+            ->getQuery();
+        $categories = $categoryRepository->findAll();
+        $annonces = $paginator->paginate(
+            $allAnnoncesFilteredByPrix, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            20 /*limit per page*/
+        );
+        return $this->render('annonces/index.html.twig', [
+            'annonces' => $annonces,
+            'min'=>$min,
+            'max'=>$max,
+            'categories' => $categories
+         ]);
     }
 }

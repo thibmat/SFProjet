@@ -1,29 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des annonces{% endblock %}
+{% block title %}Mes annonces{% endblock %}
 
 {% block body %}
-    <h1>Liste des annonces</h1>
+    <h1>Mes annonces</h1>
     <div class="mr-0 my-4 text-right">
-        {% if is_granted('ROLE_MODERATEUR') %}
-            <a href="{{ path('annonces_new') }}" class="mr-0 d-block"><button class="btn-info btn">Rédiger une nouvelle annonce</button></a>
+        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+            <a href="{{ path('annonces_new') }}" class="mr-0 d-block"><button class="btn-success btn">Rédiger une nouvelle annonce</button></a>
         {% endif %}
     </div>
-    <div class="my-4 text-center bg-secondary shadow p-3 rounded-lg row" id="filters">
-        <div id="categories" class="col-4 border-right">
-            <h6 class="text-left text-white">Categories</h6>
-            {% for categorie in categories %}
-                    <a href="{{ path('annonces_filtered_category', {'slug': categorie.slug})}}"><button class="btn-info btn d-inline-block m-1
-                {% if categorySelected is defined and categorySelected == categorie%}active{% endif %}">{{ categorie.categoryLibelle }}</button></a>
-            {% endfor %}
-        </div>
-        <div id="prix" class="col-4 border-right">
-            <h6 class="text-left text-white">Prix</h6>
-            <form class="multi-range-field my-5 pb-5">
-                <input id="multi" class="multi-range" type="range" />
-            </form>
-        </div>
-    </div>
+
         {% for annonce in annonces %}
             {% set image = annonce.image.first() | default({imageFile: null, imageName: null, imageAlt: 'image de {{ annonce.annonceTitre }}'}) %}
         <a href="{{ path('annonces_show', {'id': annonce.id}) }}" class="text-decoration-none" style="color:black">
@@ -32,15 +18,26 @@
                     <div class="col-md-1 ">
                         <img src="{{ vich_uploader_asset(image, 'imageFile', 'App\\Entity\\Image') }}" alt="image de {{ annonce.annonceTitre }}" class="w-100">
                     </div>
-                    <div class="col-md-9 px-3">
+                    <div class="col-md-8 px-3">
                         <div class="card-block px-3">
                             <h4 class="card-title d-block">{{ annonce.annonceTitre }} <span class="badge badge-success d-inline-block">{{ annonce.category }}</span></h4>
                             <p class="card-text text-black">{{ annonce.annonceTexte}}</p>
                         </div>
                     </div>
-                    <div class="col-md-2 mr-0 d-flex">
-                        <div class="card-block m-auto">
-                            <h3><span class="badge badge-info">{{ annonce.annoncePrix }} €</span></h3>
+                    <div class="col-md-3 mr-0 d-flex">
+                        <div class="card-block m-auto w-100">
+                            <h3 class="text-right"><span class="badge badge-info">{{ annonce.annoncePrix }} €</span></h3>
+                            <h5 class="text-right">
+                                {%  if  annonce.isPublished %}
+                                    <span class="badge badge-success">
+                                        Annonce validée
+                                    </span>
+                                {%  else %}
+                                    <span class="badge badge-warning">
+                                        Annonce en attente de validation
+                                    </span>
+                                {% endif %}
+                            </h5>
                         </div>
                     </div>
                 </div>
@@ -55,9 +52,6 @@
         {{ knp_pagination_render(annonces) }}
     </div>
 {% endblock %}
-{% block javascripts %}
-
-
 
 
 
