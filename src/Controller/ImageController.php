@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Annonces;
 use App\Entity\Image;
 use App\Form\ImageType;
 use App\Repository\ImageRepository;
@@ -16,8 +17,17 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ImageController extends AbstractController
 {
+    private $repository;
+
+    public function __construct(ImageRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+
     /**
      * @Route("/", name="image_index", methods={"GET"})
+     * @param ImageRepository $imageRepository
+     * @return Response
      */
     public function index(ImageRepository $imageRepository): Response
     {
@@ -30,6 +40,7 @@ class ImageController extends AbstractController
      * @Route("/new", name="image_new", methods={"GET","POST"})
      * @param Request $request
      * @param ObjectManager $entityManager
+     * @param Annonces $annonces
      * @return Response
      */
     public function new(Request $request, ObjectManager $entityManager): Response
@@ -39,6 +50,7 @@ class ImageController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $image->setAnnonces($annonces);
             $entityManager->persist($image);
             $entityManager->flush();
             return $this->redirectToRoute('image_index');
@@ -49,6 +61,29 @@ class ImageController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/new/{id<[a-z0-9\-]+>}", name="image_new_ajax", methods={"GET","POST"})
+     * @param Request $request
+     * @param ObjectManager $entityManager
+     * @param Annonces $annonces
+     * @return Image[]
+     */
+    public function newImageAjax(Request $request, ObjectManager $entityManager, Annonces $annonces)
+    {
+        $image = new Image();
+        $image->setImageFile($request->files->get('file'));
+        $image->setAnnonces($annonces);
+        $entityManager->persist($image);
+        $entityManager->flush();
+        return $this->getImageFiles($annonces);
+    }
+
+    public function getImageFiles ($annonce)
+    {
+        return $this->repository->findBy([
+            'annonces'=>$annonce
+        ]);
+    }
     /**
      * @Route("/{id}", name="image_show", methods={"GET"})
      */

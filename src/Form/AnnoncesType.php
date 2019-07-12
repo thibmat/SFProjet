@@ -15,6 +15,7 @@ class AnnoncesType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $categories = $options['categories'];
+        dump($categories);
         $builder
             ->add('category', ChoiceType::class, [
                 'choices'=>$categories,
@@ -33,7 +34,8 @@ class AnnoncesType extends AbstractType
                 'imageFile',
                 ImageType::class,[
                     'mapped'=>false,
-                    'label'=>false
+                    'label'=>false,
+                    'attr' => ['class' => 'dropzone']
                 ]
             )
         ;

@@ -115,3 +115,27 @@ body {
     background: #ccc;
     margin:auto
 }
+.dropzone {
+    background: white;
+    border-radius: 5px;
+    border: 2px dashed rgb(0, 135, 247);
+    border-image: none;
+    width: 50vw;
+    margin-left: auto;
+    margin-right: auto;
+}
+.dropzone label{
+    display:none;
+
+}
+.dropzone input{
+    width:50vw;
+    height:15vh;
+    margin-top:-15px;
+    margin-left:-22px;
+}
+.labelDropZone{
+    position:relative;
+    top:-110px;
+    left:340px;
+}

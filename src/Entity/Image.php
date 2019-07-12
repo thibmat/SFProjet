@@ -61,6 +61,17 @@ class Image
         return $this->imageName;
     }
 
+    /**
+     * @ORM\PrePersist()
+     */
+    public function test ()
+    {
+        $this->setUploadedAt(new \DateTime());
+    }
+    /**
+     * @return int|null
+     */
+
     public function getId(): ?int
     {
         return $this->id;
@@ -93,7 +104,6 @@ class Image
             // otherwise the event listeners won't be called and the file is lost
             $this->uploadedAt = new \DateTime('now');
         }
-
         return $this;
     }
 

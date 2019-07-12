@@ -6,11 +6,7 @@
 {% block body %}
     <h1>Créer une nouvelle annonce</h1>
     {#{{ macros.menu_cats(categories) }}#}
-
-
-
     {{ include('annonces/_form.html.twig') }}
-
     <div class="form-group row">
         <div class="col-sm-2">
             <a href="{{ path('annonces_index') }}"><button type="submit" class="btn-primary btn">Retour à la liste</button></a>
@@ -23,5 +19,6 @@
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('js/fileInput.js') }}"></script>
+    {#<script src="{{ asset('js/fileInput.js') }}"></script>#}
+
 {% endblock %}

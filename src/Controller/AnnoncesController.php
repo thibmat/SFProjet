@@ -103,7 +103,7 @@ class AnnoncesController extends AbstractController
             }
             else
             {
-                $cats[$cat->getCategoryLibelle()] = $cat->getId();
+                $cats[$cat->getCategoryLibelle()] = $cat;
             }
         }
         $annonce = new Annonces();
@@ -125,7 +125,6 @@ class AnnoncesController extends AbstractController
         return $this->render('annonces/new.html.twig', [
             'annonce' => $annonce,
             'form' => $form->createView(),
-            'categories'=>$categories,
         ]);
     }
 
@@ -159,9 +158,33 @@ class AnnoncesController extends AbstractController
     /**
      * @Route("/{id}/edit", name="annonces_edit", methods={"GET","POST"})
      */
-    public function edit(Request $request, Annonces $annonce): Response
+    public function edit(Request $request, Annonces $annonce, CategoriesRepository $categoryRepository): Response
     {
-        $form = $this->createForm(AnnoncesType::class, $annonce);
+        $categories = $categoryRepository->findBy([
+            'categorieMere' => null
+        ]);
+        if (empty($categories)){
+            $cats = [];
+        }
+        foreach ($categories as $cat){
+            $sousCatCollec = $cat->getCategorieEnfant();
+            if (sizeof($sousCatCollec->toArray()) > 0 )
+            {
+                $sousCat = [];
+                foreach ($sousCatCollec as $enfants)
+                {
+                    $sousCat[$enfants->getCategoryLibelle()] = $enfants;
+                    $cats[$cat->getCategoryLibelle()] = $sousCat;
+                }
+            }
+            else
+            {
+                $cats[$cat->getCategoryLibelle()] = $cat;
+            }
+        }
+        $form = $this->createForm(AnnoncesType::class, $annonce, [
+            'categories' => $cats
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -175,6 +198,7 @@ class AnnoncesController extends AbstractController
         return $this->render('annonces/edit.html.twig', [
             'annonce' => $annonce,
             'form' => $form->createView(),
+            'categories'=>$categories
         ]);
     }
     /**
